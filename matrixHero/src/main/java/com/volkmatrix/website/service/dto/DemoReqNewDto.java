@@ -7,8 +7,7 @@ import java.util.List;
 @Data
 public class DemoReqNewDto {
 
-
-  private Long id;
+//  private Long id;
   private String name;
   private String email;
   private String mobile;

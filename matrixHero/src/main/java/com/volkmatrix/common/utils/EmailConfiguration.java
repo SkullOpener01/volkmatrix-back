@@ -15,7 +15,7 @@ import java.io.File;
 
 @Component
 @Slf4j
-public class WapEmailConfiguration {
+public class EmailConfiguration {
 
   @Autowired
   private JavaMailSender mailSender;
@@ -27,7 +27,7 @@ public class WapEmailConfiguration {
   {
     SimpleMailMessage message = new SimpleMailMessage();
 //        message.setFrom("info@fonabit.com");
-    message.setFrom("noreply@pixabits.in");
+    message.setFrom("noreply@volkmatrix.com");
     message.setTo(to);
     message.setSubject(subject);
     message.setText(body);
@@ -56,7 +56,7 @@ public class WapEmailConfiguration {
 //        message.setSubject(subject);
 //        message.setText(body);
 //        helper.setFrom("info@fonabit.com");
-    helper.setFrom("noreply@pixabits.in");
+    helper.setFrom("noreply@volkmatrix.com");
     helper.setTo(to);
     helper.setSubject(subject);
     mailSender.send(mimeMessage);
@@ -70,8 +70,8 @@ public class WapEmailConfiguration {
       log.info("FilePath"+attachment);
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message,true, "UTF-8");
-      helper.setFrom("noreply@pixabits.in");
-      helper.setReplyTo("noreply@pixabits.in");
+      helper.setFrom("noreply@volkmatrix.com");
+      helper.setReplyTo("info@volkmatrix.com");
       if(attachment!=null && !attachment.isEmpty()){
         FileSystemResource file = new FileSystemResource(new File(attachment));
         helper.addAttachment(file.getFilename(),file);

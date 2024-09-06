@@ -33,7 +33,7 @@ public class DemoRequestController {
 
   @PostMapping("/demo/req")
   public ResponseEntity<BaseResponse> createDemoRequest(@RequestBody DemoReqNewDto demoReqNewDto) {
-    log.info("Create Demo Request {}", demoReqNewDto);
+    log.info("Create Demo Request {}", demoReqNewDto.toString());
     return demoReqService.createDemoRequest(demoReqNewDto);
   }
 
@@ -74,5 +74,6 @@ public class DemoRequestController {
     response.setMessage(CommonConstants.DATA_DELETED_SUCCESSFULLY);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
+
 
 }

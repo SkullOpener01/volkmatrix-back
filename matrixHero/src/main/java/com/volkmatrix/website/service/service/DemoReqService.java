@@ -25,4 +25,6 @@ public interface DemoReqService {
   List<DemoRequests> getAllDemoRequests();
 
   List<DemoRequests> getAllDemoRequestsBy(FetchDemoReqDto fetchDemoReqDto);
+
+  ResponseEntity<BaseResponse> sendEmailToDemoRequester(String email);
 }

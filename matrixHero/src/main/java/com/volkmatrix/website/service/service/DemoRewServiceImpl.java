@@ -6,6 +6,9 @@ import com.volkmatrix.common.exception.ApiServiceException;
 import com.volkmatrix.common.exception.ResourceNotFoundException;
 import com.volkmatrix.common.model.BaseResponse;
 import com.volkmatrix.common.model.DataResponse;
+import com.volkmatrix.common.utils.ApplicationUtils;
+import com.volkmatrix.common.utils.EmailConfiguration;
+import com.volkmatrix.common.utils.EmailTemplates;
 import com.volkmatrix.website.service.dto.DemoReqNewDto;
 import com.volkmatrix.website.service.dto.DemoReqUpdateDtp;
 import com.volkmatrix.website.service.dto.FetchDemoReqDto;
@@ -13,6 +16,7 @@ import com.volkmatrix.website.service.model.DemoRequests;
 import com.volkmatrix.website.service.model.VolkServices;
 import com.volkmatrix.website.service.repo.DemoReqRepo;
 import com.volkmatrix.website.service.repo.ServicesRepo;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -20,18 +24,22 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class DemoRewServiceImpl implements DemoReqService {
 
+  private static final Logger log = LoggerFactory.getLogger(DemoRewServiceImpl.class);
   @Autowired
   private DemoReqRepo demoReqRepo;
 
@@ -41,6 +49,9 @@ public class DemoRewServiceImpl implements DemoReqService {
   private EntityManager entityManager; // Use EntityManager for CriteriaBuilder
   @Autowired
   private ServicesRepo servicesRepo;
+
+  @Autowired
+  EmailConfiguration emailConfiguration;
 
 
   @Override
@@ -58,8 +69,23 @@ public class DemoRewServiceImpl implements DemoReqService {
       newRequest.setConnectExpert(requestDto.isConnectExpert());
       newRequest.setKeepInformed(requestDto.isKeepInformed());
 
+
       // Save the demo request
       DemoRequests savedRequest = demoReqRepo.save(newRequest);
+
+      String emailBody = EmailTemplates.DEMO_REQEST_MAIL;
+      emailBody = emailBody.replace("CUSTOMER_NAME", requestDto.getName());
+      emailBody = emailBody.replace("CUSTOMER_EMAIL", requestDto.getEmail());
+      emailBody = emailBody.replace("CUSTOMER_PHONE", requestDto.getMobile());
+
+      String finalEmailBody = emailBody;
+      String [] recipient = {"business@volkmatrix.com", requestDto.getEmail()};
+      new Thread(() -> {
+        log.info("sending message to recipient : {}", recipient[1]);
+        emailConfiguration.sendAttchMimeEmail(recipient, null,"Get Ready: Your Personalized Demo with Volkmatrix " +
+            "is Coming Soon!", finalEmailBody);
+      }).start();
+
       response.setMessage(CommonConstants.DEMO_REQUEST_SUCCESS);
       response.setStatusCode(StatusCodes.REQUEST_SUCCESS);
 
@@ -185,5 +211,51 @@ public class DemoRewServiceImpl implements DemoReqService {
 
     criteriaQuery.where(predicates.toArray(new Predicate[0]));
     return entityManager.createQuery(criteriaQuery).getResultList();
+  }
+
+  @Override
+  public ResponseEntity<BaseResponse> sendEmailToDemoRequester(String mailAddress) {
+    try {
+      BaseResponse response = new BaseResponse();
+      String OTP = ApplicationUtils.generateRandomNumOnLength(6);
+      log.info("OTP :: {}", OTP);
+
+      (new Thread() {
+        @Override
+        public void run() {
+          try {
+            emailConfiguration.sendMail(mailAddress, "OTP REQUEST.",
+                "Dear Customer, \n\nYour OTP(One time password) is " + OTP + "\n\n Thanks \n Volkmatrix");
+          } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ApiServiceException(e.getMessage());
+          }
+        }
+      }).start();
+
+
+      (new Thread() {
+        @Override
+        public void run() {
+          try {
+            String emailBody = EmailTemplates.OTP_LOGIN;
+            emailBody = emailBody.replace("OTP_NUMBER", OTP);
+            emailConfiguration.sendHtmlMail(mailAddress, "2FA Code", emailBody);
+          } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ApiServiceException(e.getMessage());
+          }
+        }
+      }).start();
+
+      response.setMessage("Sending mail to requested demo");
+      response.setStatusCode(StatusCodes.REQUEST_SUCCESS);
+
+
+      return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    } catch (Exception e) {
+      throw new ApiServiceException(e.getMessage());
+    }
   }
 }
