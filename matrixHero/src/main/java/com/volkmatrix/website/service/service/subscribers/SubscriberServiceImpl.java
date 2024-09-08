@@ -41,7 +41,7 @@ public class SubscriberServiceImpl implements SubscriberService {
       subscriber.setActiveFlg(true);
       subscribersRepo.save(subscriber);
 
-      String welcomeMailSubscriber = EmailTemplates.WELCOME_MAIL_SUBSCRIBER;
+      String welcomeMailSubscriber = EmailTemplates.WELCOME_MAIL_SUBSCRIBER_NEW;
       String[] recipients = {email.toLowerCase()};
       new Thread(() -> {
         log.info("sending message to email subscriber :: {} ",recipients[0]);

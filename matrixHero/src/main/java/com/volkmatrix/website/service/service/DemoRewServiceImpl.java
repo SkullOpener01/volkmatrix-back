@@ -73,7 +73,7 @@ public class DemoRewServiceImpl implements DemoReqService {
       // Save the demo request
       DemoRequests savedRequest = demoReqRepo.save(newRequest);
 
-      String emailBody = EmailTemplates.DEMO_REQEST_MAIL;
+      String emailBody = EmailTemplates.DEMO_REQEST_MAIL_NEW;
       emailBody = emailBody.replace("CUSTOMER_NAME", requestDto.getName());
       emailBody = emailBody.replace("CUSTOMER_EMAIL", requestDto.getEmail());
       emailBody = emailBody.replace("CUSTOMER_PHONE", requestDto.getMobile());
