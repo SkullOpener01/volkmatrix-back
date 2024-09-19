@@ -29,20 +29,91 @@
 
   </dependencies>
 
+
+  <profiles>
+
+    <profile>
+      <id>test</id>
+      <activation>
+
+        <property>
+          <name>spring.profiles.active</name>
+          <value>test</value>
+        </property>
+      </activation>
+
+      <build>
+        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+          <plugins>
+
+            <plugin>
+              <groupId>org.apache.tomcat.maven</groupId>
+              <artifactId>tomcat7-maven-plugin</artifactId>
+              <version>2.2</version>
+              <configuration>
+                <url>http://103.147.210.240:8080/manager/text</url>
+                <server>volkmatrix</server>
+                <path>/app</path>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
+
+      </build>
+
+    </profile>
+
+
+    <profile>
+      <id>prod</id>
+      <activation>
+
+        <property>
+          <name>spring.profiles.active</name>
+          <value>prod</value>
+        </property>
+      </activation>
+
+      <build>
+        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+          <plugins>
+
+            <plugin>
+              <groupId>org.apache.tomcat.maven</groupId>
+              <artifactId>tomcat7-maven-plugin</artifactId>
+              <version>2.2</version>
+              <configuration>
+                <url>http://147.79.67.252:8080/manager/text</url>
+                <server>volkmatrix</server>
+                <path>/app</path>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
+
+      </build>
+
+    </profile>
+
+
+  </profiles>
+
+
   <build>
     <finalName>matrixHero</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <url>http://103.147.210.240:8080/manager/text</url>
-          <server>volkmatrix</server>
-          <path>/app</path>
-        </configuration>
-      </plugin>
-    </plugins>
+    <!--    <plugins>-->
+    <!--      <plugin>-->
+    <!--        <groupId>org.apache.tomcat.maven</groupId>-->
+    <!--        <artifactId>tomcat7-maven-plugin</artifactId>-->
+    <!--        <version>2.2</version>-->
+    <!--        <configuration>-->
+    <!--          <url>http://103.147.210.240:8080/manager/text</url>-->
+    <!--          <server>volkmatrix</server>-->
+    <!--          <path>/app</path>-->
+    <!--        </configuration>-->
+    <!--      </plugin>-->
+    <!--    </plugins>-->
   </build>
-
 </project>
