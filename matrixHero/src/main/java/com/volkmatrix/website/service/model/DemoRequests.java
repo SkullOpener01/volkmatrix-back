@@ -20,6 +20,8 @@ public class DemoRequests extends BaseModel {
   private String mobile;
   @Column(name = "message", nullable = false)
   private String message;
+@Column(name = "demoDateTime", nullable = false)
+  private String demoDateTime;
   private boolean wapNotification;    // this is for getting opt-in for whatsapp notification
   private boolean connectExpert;  // this is by default true, if user wants our agent to connect with them
   private boolean keepInformed;   // send mail to customers about products and new offers

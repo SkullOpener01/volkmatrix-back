@@ -9,6 +9,7 @@ import com.volkmatrix.common.model.DataResponse;
 import com.volkmatrix.common.utils.ApplicationUtils;
 import com.volkmatrix.common.utils.EmailConfiguration;
 import com.volkmatrix.common.utils.EmailTemplates;
+import com.volkmatrix.common.utils.WhatsappConfigs;
 import com.volkmatrix.website.service.dto.DemoReqNewDto;
 import com.volkmatrix.website.service.dto.DemoReqUpdateDtp;
 import com.volkmatrix.website.service.dto.FetchDemoReqDto;
@@ -53,6 +54,10 @@ public class DemoRewServiceImpl implements DemoReqService {
   @Autowired
   EmailConfiguration emailConfiguration;
 
+  @Autowired
+  WhatsappConfigs whatsappConfigs;
+
+
 
   @Override
   @Transactional
@@ -65,6 +70,7 @@ public class DemoRewServiceImpl implements DemoReqService {
       newRequest.setEmail(requestDto.getEmail());
       newRequest.setMobile(requestDto.getMobile());
       newRequest.setMessage(requestDto.getMessage());
+      newRequest.setDemoDateTime(requestDto.getDemoDate() + ", " + requestDto.getDemoTime());
       newRequest.setWapNotification(requestDto.isWapNotification());
       newRequest.setConnectExpert(requestDto.isConnectExpert());
       newRequest.setKeepInformed(requestDto.isKeepInformed());
@@ -85,6 +91,21 @@ public class DemoRewServiceImpl implements DemoReqService {
         emailConfiguration.sendAttchMimeEmail(recipient, null,"Get Ready: Your Personalized Demo with Volkmatrix " +
             "is Coming Soon!", finalEmailBody);
       }).start();
+
+      // sending whatsapp to customer
+      new Thread(() -> {
+        log.info("sending whatsapp to customer : {}");
+        whatsappConfigs.sendDemoToCustomer(requestDto.getMobile(),requestDto.getName(),requestDto.getDemoTime()+ ", " + requestDto.getDemoTime());
+      }).start();
+
+      // sending whatsapp to business
+      new Thread(() -> {
+        log.info("sending whatsapp to business : {}");
+        whatsappConfigs.sendDemoToBizz("9717803016",requestDto.getName(),requestDto.getMobile(),requestDto.getEmail()
+            ,requestDto.getDemoTime()+ ", " + requestDto.getDemoTime());
+      }).start();
+
+
 
       response.setMessage(CommonConstants.DEMO_REQUEST_SUCCESS);
       response.setStatusCode(StatusCodes.REQUEST_SUCCESS);
