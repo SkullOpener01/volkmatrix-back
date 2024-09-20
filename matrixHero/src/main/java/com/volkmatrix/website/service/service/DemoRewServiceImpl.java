@@ -95,14 +95,15 @@ public class DemoRewServiceImpl implements DemoReqService {
       // sending whatsapp to customer
       new Thread(() -> {
         log.info("sending whatsapp to customer : {}");
-        whatsappConfigs.sendDemoToCustomer(requestDto.getMobile(),requestDto.getName(),requestDto.getDemoTime()+ ", " + requestDto.getDemoTime());
+        whatsappConfigs.sendDemoToCustomer(requestDto.getMobile(),requestDto.getName(),
+            requestDto.getDemoDate()+ ", " + requestDto.getDemoTime());
       }).start();
 
       // sending whatsapp to business
       new Thread(() -> {
         log.info("sending whatsapp to business : {}");
         whatsappConfigs.sendDemoToBizz("9717803016",requestDto.getName(),requestDto.getMobile(),requestDto.getEmail()
-            ,requestDto.getDemoTime()+ ", " + requestDto.getDemoTime());
+            ,requestDto.getDemoDate()+ ", " + requestDto.getDemoTime());
       }).start();
 
 
