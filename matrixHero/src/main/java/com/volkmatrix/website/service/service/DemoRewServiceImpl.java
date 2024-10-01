@@ -70,7 +70,11 @@ public class DemoRewServiceImpl implements DemoReqService {
       newRequest.setEmail(requestDto.getEmail());
       newRequest.setMobile(requestDto.getMobile());
       newRequest.setMessage(requestDto.getMessage());
+      if(requestDto.isBotPenguinReq()){
+        newRequest.setDemoDateTime(requestDto.getDemoDate());
+      }else {
       newRequest.setDemoDateTime(requestDto.getDemoDate() + ", " + requestDto.getDemoTime());
+      }
       newRequest.setWapNotification(requestDto.isWapNotification());
       newRequest.setConnectExpert(requestDto.isConnectExpert());
       newRequest.setKeepInformed(requestDto.isKeepInformed());
@@ -96,14 +100,14 @@ public class DemoRewServiceImpl implements DemoReqService {
       new Thread(() -> {
         log.info("sending whatsapp to customer : {}");
         whatsappConfigs.sendDemoToCustomer(requestDto.getMobile(),requestDto.getName(),
-            requestDto.getDemoDate()+ ", " + requestDto.getDemoTime());
+            savedRequest.getDemoDateTime());
       }).start();
 
       // sending whatsapp to business
       new Thread(() -> {
         log.info("sending whatsapp to business : {}");
         whatsappConfigs.sendDemoToBizz("9717803016",requestDto.getName(),requestDto.getMobile(),requestDto.getEmail()
-            ,requestDto.getDemoDate()+ ", " + requestDto.getDemoTime());
+            ,savedRequest.getDemoDateTime());
       }).start();
 
 
